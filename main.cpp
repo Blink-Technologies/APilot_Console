@@ -20,7 +20,7 @@ using std::this_thread::sleep_for;
 
 int InitMav();
 static void CallBack_Battery(Telemetry::Battery);
-static void CallBack_ActuatorOutput(Telemetry::ActuatorOutputStatus);
+//static void CallBack_ActuatorOutput(Telemetry::ActuatorOutputStatus);
 
 
 
@@ -31,6 +31,18 @@ int main(int argc, char *argv[])
     InitMav();
     return a.exec();
 }
+
+void process_rc_channels(const mavlink_message_t& message) {
+    mavlink_rc_channels_t rc_channels;
+    mavlink_msg_rc_channels_decode(&message, &rc_channels);
+
+    std::cout << "RC Channels:" << std::endl;
+    std::cout << "Time boot ms: " << rc_channels.time_boot_ms << std::endl;
+    std::cout << "Channel count: " << rc_channels.chancount << std::endl;
+
+    //for (int i = 0; i < rc_channels.chancount; ++i) {
+    //    std::cout << "Channel " << i + 1 << ": " << rc_channels.chan[i] << std::endl;
+    }
 
 int InitMav()
 {
@@ -106,16 +118,16 @@ int InitMav()
 
 
     telemetry.subscribe_battery(CallBack_Battery);
-    telemetry.subscribe_actuator_output_status(CallBack_ActuatorOutput);
+    //telemetry.subscribe_actuator_output_status(CallBack_ActuatorOutput);
 
     //telemetry.subscribe_actuator_output_status([] (const Telemetry::ActuatorOutputStatusCallback& callback)
     //{
     //
     //});
-
-
     //mavlink_passthrough.subscribe_message(65, CallBack_RC_Channels);
 
+
+    /*
     mavlink_passthrough.subscribe_message(65, [](const mavlink_message_t &msg_raw)
                                           {
 
@@ -137,11 +149,30 @@ int InitMav()
 
                                           }
                                           );
+*/
+
+    mavlink_passthrough.subscribe_message(
+        MAVLINK_MSG_ID_RC_CHANNELS,
+        [](const mavlink_message_t& message) {
+            qDebug()<<"RC Recieved \n";
+            process_rc_channels(message);
+        }
+        );
+
 
     mavsdk.intercept_incoming_messages_async([](mavlink_message_t& message) {
         qDebug() << "Got message " << (int)message.msgid << "\n";
         return true;
     });
+
+
+
+    // Keep the program alive to receive updates
+    for (;;) {
+        sleep_for(seconds(1));
+    }
+
+
 
     while (true) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -190,9 +221,11 @@ static void CallBack_Battery(Telemetry::Battery btry)
     qDebug()<<"Battery Voltage : " << btry.voltage_v << " \n";
 }
 
+/*
 static void CallBack_ActuatorOutput(Telemetry::ActuatorOutputStatus aa)
 {
     qDebug() << "Callback :: Actuator Output Status \n";
     qDebug() <<aa.active;
     //qDebug()<<"Battery Voltage : " << btry.voltage_v << " \n";
 }
+*/
