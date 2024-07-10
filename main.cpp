@@ -19,7 +19,9 @@ using std::chrono::seconds;
 using std::this_thread::sleep_for;
 
 int InitMav();
-void CallBack_Battery(Telemetry::Battery);
+static void CallBack_Battery(Telemetry::Battery);
+static void CallBack_ActuatorOutput(Telemetry::ActuatorOutputStatus);
+
 
 
 int main(int argc, char *argv[])
@@ -63,6 +65,8 @@ int InitMav()
     // We want to listen to the altitude of the drone at 1 Hz.
     const auto set_rate_result = telemetry.set_rate_position(1.0);
     const auto set_battery_result = telemetry.set_rate_battery(1.0);
+    const auto set_act_result = telemetry.set_rate_actuator_output_status(1.0);
+
 
     if (set_rate_result != Telemetry::Result::Success) {
         qDebug() << "Setting rate failed: \n";
@@ -71,6 +75,12 @@ int InitMav()
 
     if (set_battery_result != Telemetry::Result::Success) {
         qDebug() << "Setting rate battery failed: \n";
+        return 1;
+    }
+
+
+    if (set_act_result != Telemetry::Result::Success) {
+        qDebug() << "Setting rate Act failed: \n";
         return 1;
     }
 
@@ -96,6 +106,12 @@ int InitMav()
 
 
     telemetry.subscribe_battery(CallBack_Battery);
+    telemetry.subscribe_actuator_output_status(CallBack_ActuatorOutput);
+
+    //telemetry.subscribe_actuator_output_status([] (const Telemetry::ActuatorOutputStatusCallback& callback)
+    //{
+    //
+    //});
 
 
     //mavlink_passthrough.subscribe_message(65, CallBack_RC_Channels);
@@ -168,8 +184,15 @@ int InitMav()
 
 }
 
-void CallBack_Battery(Telemetry::Battery btry)
+static void CallBack_Battery(Telemetry::Battery btry)
 {
     qDebug() << "Callback :: Battery \n";
     qDebug()<<"Battery Voltage : " << btry.voltage_v << " \n";
+}
+
+static void CallBack_ActuatorOutput(Telemetry::ActuatorOutputStatus aa)
+{
+    qDebug() << "Callback :: Actuator Output Status \n";
+    qDebug() <<aa.active;
+    //qDebug()<<"Battery Voltage : " << btry.voltage_v << " \n";
 }
