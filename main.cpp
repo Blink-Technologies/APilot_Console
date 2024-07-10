@@ -176,14 +176,22 @@ int InitMav()
                                               mavlink_rc_channels_t rc_channels;
                                               mavlink_msg_rc_channels_decode(msg, &rc_channels);
                                               qDebug()<< "Number of channels received: " << int(rc_channels.chancount) << "\n";
-                                              qDebug() << "Channel 1 : " << rc_channels.chan1_raw << "\n";
-                                              qDebug() << "Channel 2 : " << rc_channels.chan2_raw << "\n";
-                                              qDebug() << "Channel 3 : " << rc_channels.chan3_raw << "\n";
-                                              qDebug() << "Channel 4 : " << rc_channels.chan4_raw << "\n";
-                                              qDebug() << "Channel 5 : " << rc_channels.chan5_raw << "\n";
-                                              qDebug() << "Channel 6 : " << rc_channels.chan6_raw << "\n";
-                                              qDebug() << "Channel 7 : " << rc_channels.chan7_raw << "\n";
-                                              qDebug() << "Channel 8 : " << rc_channels.chan8_raw << "\n";
+                                              qDebug() << "Channel 1 : " << rc_channels.chan1_raw;// << "\n";
+                                              qDebug() << "Channel 2 : " << rc_channels.chan2_raw;// << "\n";
+                                              qDebug() << "Channel 3 : " << rc_channels.chan3_raw;// << "\n";
+                                              qDebug() << "Channel 4 : " << rc_channels.chan4_raw;// << "\n";
+                                              qDebug() << "Channel 5 : " << rc_channels.chan5_raw;// << "\n";
+                                              qDebug() << "Channel 6 : " << rc_channels.chan6_raw;// << "\n";
+                                              qDebug() << "Channel 7 : " << rc_channels.chan7_raw;// << "\n";
+                                              qDebug() << "Channel 8 : " << rc_channels.chan8_raw;// << "\n";
+                                              qDebug() << "Channel 9 : " << rc_channels.chan9_raw;// << "\n";
+                                              qDebug() << "Channel 10 : " << rc_channels.chan10_raw;// << "\n";
+                                              qDebug() << "Channel 11 : " << rc_channels.chan11_raw;// << "\n";
+                                              qDebug() << "Channel 12 : " << rc_channels.chan12_raw;// << "\n";
+                                              qDebug() << "Channel 13 : " << rc_channels.chan13_raw;// << "\n";
+                                              qDebug() << "Channel 14 : " << rc_channels.chan14_raw;// << "\n";
+                                              qDebug() << "Channel 15 : " << rc_channels.chan15_raw;// << "\n";
+                                              qDebug() << "Channel 16 : " << rc_channels.chan16_raw;// << "\n";
 
                                           }
                                           );
@@ -214,10 +222,12 @@ int InitMav()
         );
 
 
+    /*
     mavsdk.intercept_incoming_messages_async([](mavlink_message_t& message) {
         qDebug() << "Got message " << (int)message.msgid << "\n";
         return true;
     });
+    */
 
 
 
