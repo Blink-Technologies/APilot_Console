@@ -77,7 +77,7 @@ int InitMav()
     // We want to listen to the altitude of the drone at 1 Hz.
     const auto set_rate_result = telemetry.set_rate_position(1.0);
     const auto set_battery_result = telemetry.set_rate_battery(1.0);
-    const auto set_act_result = telemetry.set_rate_actuator_output_status(1.0);
+    //const auto set_act_result = telemetry.set_rate_actuator_output_status(1.0);
 
 
     if (set_rate_result != Telemetry::Result::Success) {
@@ -87,12 +87,6 @@ int InitMav()
 
     if (set_battery_result != Telemetry::Result::Success) {
         qDebug() << "Setting rate battery failed: \n";
-        return 1;
-    }
-
-
-    if (set_act_result != Telemetry::Result::Success) {
-        qDebug() << "Setting rate Act failed: \n";
         return 1;
     }
 
@@ -158,6 +152,21 @@ int InitMav()
             process_rc_channels(message);
         }
         );
+
+    mavlink_passthrough.subscribe_message(
+        34,
+        [](const mavlink_message_t& message) {
+            qDebug()<<"RC Recieved 34 : " << message.len << "\n";
+        }
+        );
+
+    mavlink_passthrough.subscribe_message(
+        35,
+        [](const mavlink_message_t& message) {
+            qDebug()<<"RC Recieved 35 : " << message.len << "\n";
+        }
+        );
+
 
 
     mavsdk.intercept_incoming_messages_async([](mavlink_message_t& message) {
