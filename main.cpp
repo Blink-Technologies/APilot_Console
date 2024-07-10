@@ -37,12 +37,11 @@ void process_rc_channels(const mavlink_message_t& message) {
     mavlink_rc_channels_t rc_channels;
     mavlink_msg_rc_channels_decode(&message, &rc_channels);
 
-    std::cout << "RC Channels:" << std::endl;
-    std::cout << "Time boot ms: " << rc_channels.time_boot_ms << std::endl;
-    std::cout << "Channel count: " << rc_channels.chancount << std::endl;
+    qDebug() << "RC Channels \n";
+    qDebug() << "Channel count: " << rc_channels.chancount << "\n";
 
     //for (int i = 0; i < rc_channels.chancount; ++i) {
-    //    std::cout << "Channel " << i + 1 << ": " << rc_channels.chan[i] << std::endl;
+        //qDebug() << "Channel " << i + 1 << ": " << rc_channels. [i] << std::endl;
     }
 
 int InitMav()
@@ -166,6 +165,31 @@ int InitMav()
 
 
 
+
+    mavlink_passthrough.subscribe_message(MAVLINK_MSG_ID_RC_CHANNELS, [](const mavlink_message_t &msg_raw)
+                                          {
+
+                                              qDebug() << "Recieved RC Transmission: \n";
+
+                                              const mavlink_message_t* msg = &msg_raw;
+
+                                              mavlink_rc_channels_t rc_channels;
+                                              mavlink_msg_rc_channels_decode(msg, &rc_channels);
+                                              qDebug()<< "Number of channels received: " << int(rc_channels.chancount) << "\n";
+                                              qDebug() << "Channel 1 : " << rc_channels.chan1_raw << "\n";
+                                              qDebug() << "Channel 2 : " << rc_channels.chan2_raw << "\n";
+                                              qDebug() << "Channel 3 : " << rc_channels.chan3_raw << "\n";
+                                              qDebug() << "Channel 4 : " << rc_channels.chan4_raw << "\n";
+                                              qDebug() << "Channel 5 : " << rc_channels.chan5_raw << "\n";
+                                              qDebug() << "Channel 6 : " << rc_channels.chan6_raw << "\n";
+                                              qDebug() << "Channel 7 : " << rc_channels.chan7_raw << "\n";
+                                              qDebug() << "Channel 8 : " << rc_channels.chan8_raw << "\n";
+
+                                          }
+                                          );
+
+
+    /*
     mavlink_passthrough.subscribe_message(
         MAVLINK_MSG_ID_RC_CHANNELS,
         [](const mavlink_message_t& message) {
@@ -173,6 +197,7 @@ int InitMav()
             process_rc_channels(message);
         }
         );
+    */
 
     mavlink_passthrough.subscribe_message(
         34,
