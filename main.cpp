@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
+
 void process_rc_channels(const mavlink_message_t& message) {
     mavlink_rc_channels_t rc_channels;
     mavlink_msg_rc_channels_decode(&message, &rc_channels);
@@ -144,6 +145,26 @@ int InitMav()
                                           }
                                           );
 */
+
+
+    MavlinkPassthrough::CommandLong cmd_to_set_rate;
+
+    cmd_to_set_rate.target_sysid = mavlink_passthrough.get_target_sysid();
+    cmd_to_set_rate.target_compid = mavlink_passthrough.get_target_compid();
+    cmd_to_set_rate.command = MAV_CMD_SET_MESSAGE_INTERVAL;
+    cmd_to_set_rate.param1 = 65;
+    cmd_to_set_rate.param2 = 1000000;  //1Hz
+    cmd_to_set_rate.param3 =0;
+    cmd_to_set_rate.param4 =0;
+    cmd_to_set_rate.param5 =0;
+    cmd_to_set_rate.param6 =0;
+    cmd_to_set_rate.param7 =0;
+
+    MavlinkPassthrough::Result res = mavlink_passthrough.send_command_long(cmd_to_set_rate);
+
+    qDebug()<<"Result : "<<(int)res<< "\n";
+
+
 
     mavlink_passthrough.subscribe_message(
         MAVLINK_MSG_ID_RC_CHANNELS,
