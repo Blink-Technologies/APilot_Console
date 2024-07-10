@@ -168,7 +168,6 @@ int InitMav()
         );
 
 
-
     mavsdk.intercept_incoming_messages_async([](mavlink_message_t& message) {
         qDebug() << "Got message " << (int)message.msgid << "\n";
         return true;
