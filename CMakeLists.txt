@@ -20,6 +20,7 @@ find_package(MAVSDK REQUIRED)
 add_executable(APilot_Console
   main.cpp
   apilot.h apilot.cpp
+
 )
 
 target_link_libraries(APilot_Console Qt${QT_VERSION_MAJOR}::Core MAVSDK::mavsdk)

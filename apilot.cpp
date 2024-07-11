@@ -15,7 +15,9 @@ enum
 };
 
 
-apilot::apilot() {}
+apilot::apilot(QObject *parent)
+    : QObject{parent}
+{}
 
 
 void apilot::Start()

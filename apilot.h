@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QString>
 #include <QTimer>
+#include <QObject>
 
 #define VEHICLE_CONNECTION_PATH "/dev/ttyACM0"
 
@@ -22,10 +23,16 @@ using std::chrono::seconds;
 using std::this_thread::sleep_for;
 
 
-class apilot
+class apilot : public QObject
 {
+    Q_OBJECT
+
+signals:
+
+
+
 public:
-    apilot();
+    explicit apilot(QObject *parent = nullptr);
 
     void Start();
     static void CallBack_Battery(mavsdk::Telemetry::Battery btry);
@@ -34,6 +41,9 @@ public:
     static void CallBack_AttitudeEuler(Telemetry::EulerAngle an);
     static void CallBack_RCStatus(Telemetry::RcStatus rc);
     static void CallBack_Health(Telemetry::Health h);
+
+public slots:
+
 private:
     void process_rc_channels(const mavlink_message_t &message);
     int InitMav();
