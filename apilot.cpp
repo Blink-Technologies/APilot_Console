@@ -124,6 +124,8 @@ int apilot::InitMav()
 
             FLAG_ARM_PREV = FLAG_ARM;
         }
+
+        sleep_for(seconds(1));
     }
 
     return 0;
