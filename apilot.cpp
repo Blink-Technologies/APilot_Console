@@ -5,6 +5,15 @@
 
 bool FLAG_ARM = false;
 bool FLAG_ARM_PREV = false;
+bool FLAG_AI_MODE = false;
+int FLAG_FLT_MODE = false;
+
+enum
+{
+    RC_MODE_STABLIZE,
+    RC_MODE_GUIDED_NO_GPS
+};
+
 
 apilot::apilot() {}
 
@@ -58,12 +67,23 @@ int apilot::InitMav()
     else
         qDebug() << "Setting Rate Success: Euler";
 
+    if (telemetry.set_rate_rc_status(1.0) != Telemetry::Result::Success)
+        qDebug() << "Setting Rate failed: RC Status";
+    else
+        qDebug() << "Setting Rate Success: RC Status";
 
+    //if (telemetry.set_rate_health(1.0) != Telemetry::Result::Success)
+    //    qDebug() << "Setting Rate failed: Health";
+    //else
+    //    qDebug() << "Setting Rate Success: Health";
 
 
     telemetry.subscribe_flight_mode(apilot::CallBack_FlightMode);
     telemetry.subscribe_battery(apilot::CallBack_Battery);
     telemetry.subscribe_attitude_euler(apilot::CallBack_AttitudeEuler);
+    telemetry.subscribe_rc_status(apilot::CallBack_RCStatus);
+    telemetry.subscribe_health(apilot::CallBack_Health);
+
 
     // Set Rate of RC Channels
     MavlinkPassthrough::CommandLong cmd_to_set_rate;
@@ -114,7 +134,12 @@ void apilot::CallBack_FlightMode(Telemetry::FlightMode f)
 
 void apilot::CallBack_Battery(Telemetry::Battery btry)
 {
-    qDebug()<<"Battery Voltage : " << btry.voltage_v;
+    qDebug()<<"Battery ID : " << btry.id;
+    qDebug()<<"Battery Temp : " << btry.temperature_degc;
+    qDebug()<<"Battery Volt : " << btry.voltage_v;
+    qDebug()<<"Battery Capacity Consumed : " << btry.capacity_consumed_ah;
+    qDebug()<<"Battery Remaining Percentage : " << btry.remaining_percent;
+
 }
 
 void apilot::CallBack_RC_Channels(const mavlink_message_t msg_raw)
@@ -123,6 +148,7 @@ void apilot::CallBack_RC_Channels(const mavlink_message_t msg_raw)
     const mavlink_message_t* msg = &msg_raw;
     mavlink_rc_channels_t rc_channels;
     mavlink_msg_rc_channels_decode(msg, &rc_channels);
+    /*
     qDebug()<< "Number of channels received: " << int(rc_channels.chancount) << "\n";
     qDebug() << "Channel 1 : " << rc_channels.chan1_raw;// << "\n";
     qDebug() << "Channel 2 : " << rc_channels.chan2_raw;// << "\n";
@@ -140,6 +166,7 @@ void apilot::CallBack_RC_Channels(const mavlink_message_t msg_raw)
     qDebug() << "Channel 14 : " << rc_channels.chan14_raw;// << "\n";
     qDebug() << "Channel 15 : " << rc_channels.chan15_raw;// << "\n";
     qDebug() << "Channel 16 : " << rc_channels.chan16_raw;// << "\n";
+    */
 
 
     //Channel 6 is for ARM/DISARM
@@ -151,6 +178,36 @@ void apilot::CallBack_RC_Channels(const mavlink_message_t msg_raw)
     {
         FLAG_ARM = true;
     }
+
+
+    //Channel 5
+    if (rc_channels.chan5_raw < 1100)
+    {
+        //UP
+        FLAG_AI_MODE = false;
+        FLAG_FLT_MODE = RC_MODE_STABLIZE;
+        qDebug()<<"AI MODE DISABLED";
+    }
+    else
+    {
+        FLAG_AI_MODE = true;
+        FLAG_FLT_MODE = RC_MODE_GUIDED_NO_GPS;
+        qDebug()<<"AI MODE ENABLED";
+    }
+
+    //Channel 8
+    if (rc_channels.chan8_raw < 1100)
+    {
+        // Dis-engage Target
+         qDebug()<<"Target Dis-Engaged";
+    }
+    else
+    {
+        // Engage Target
+        qDebug()<<"Target Engaged";
+
+    }
+
 }
 
 void apilot::CallBack_AttitudeEuler(Telemetry::EulerAngle an)
@@ -158,4 +215,17 @@ void apilot::CallBack_AttitudeEuler(Telemetry::EulerAngle an)
     qDebug()<<"Roll : " <<an.roll_deg;
     qDebug()<<"Pitch : " <<an.pitch_deg;
     qDebug()<<"Roll : " <<an.roll_deg;
+}
+
+void apilot::CallBack_RCStatus(Telemetry::RcStatus rc)
+{
+    qDebug()<<"RC Status :: Is Available :: " << rc.is_available;
+    qDebug()<<"RC Status :: Signal Strength :: " << rc.signal_strength_percent;
+}
+
+void apilot::CallBack_Health(Telemetry::Health h)
+{
+    qDebug()<<"Health :: Gyro Calibration :: " <<h.is_gyrometer_calibration_ok;
+    qDebug()<<"Health :: Accl Calibration :: " <<h.is_accelerometer_calibration_ok;
+    qDebug()<<"Health :: Armable :: " <<h.is_armable;
 }

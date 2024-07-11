@@ -27,11 +27,13 @@ class apilot
 public:
     apilot();
 
+    void Start();
     static void CallBack_Battery(mavsdk::Telemetry::Battery btry);
     static void CallBack_RC_Channels(const mavlink_message_t msg_raw);
-    void Start();
     static void CallBack_FlightMode(Telemetry::FlightMode f);
     static void CallBack_AttitudeEuler(Telemetry::EulerAngle an);
+    static void CallBack_RCStatus(Telemetry::RcStatus rc);
+    static void CallBack_Health(Telemetry::Health h);
 private:
     void process_rc_channels(const mavlink_message_t &message);
     int InitMav();
