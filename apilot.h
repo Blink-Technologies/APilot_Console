@@ -31,6 +31,7 @@ public:
     static void CallBack_RC_Channels(const mavlink_message_t msg_raw);
     void Start();
     static void CallBack_FlightMode(Telemetry::FlightMode f);
+    static void CallBack_AttitudeEuler(Telemetry::EulerAngle an);
 private:
     void process_rc_channels(const mavlink_message_t &message);
     int InitMav();

@@ -53,9 +53,17 @@ int apilot::InitMav()
     else
         qDebug() << "Setting Rate Success: Battery";
 
+    if (telemetry.set_rate_attitude_euler(1.0) != Telemetry::Result::Success)
+        qDebug() << "Setting Rate failed: Euler";
+    else
+        qDebug() << "Setting Rate Success: Euler";
+
+
+
 
     telemetry.subscribe_flight_mode(apilot::CallBack_FlightMode);
     telemetry.subscribe_battery(apilot::CallBack_Battery);
+    telemetry.subscribe_attitude_euler(apilot::CallBack_AttitudeEuler);
 
     // Set Rate of RC Channels
     MavlinkPassthrough::CommandLong cmd_to_set_rate;
@@ -143,4 +151,11 @@ void apilot::CallBack_RC_Channels(const mavlink_message_t msg_raw)
     {
         FLAG_ARM = true;
     }
+}
+
+void apilot::CallBack_AttitudeEuler(Telemetry::EulerAngle an)
+{
+    qDebug()<<"Roll : " <<an.roll_deg;
+    qDebug()<<"Pitch : " <<an.pitch_deg;
+    qDebug()<<"Roll : " <<an.roll_deg;
 }
