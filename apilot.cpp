@@ -1,6 +1,10 @@
 #include "apilot.h"
+#include "stdio.h"
+#include "stdbool.h"
 
 
+bool FLAG_ARM = false;
+bool FLAG_ARM_PREV = false;
 
 apilot::apilot() {}
 
@@ -71,7 +75,26 @@ int apilot::InitMav()
 
     mavlink_passthrough.subscribe_message(MAVLINK_MSG_ID_RC_CHANNELS, apilot::CallBack_RC_Channels);
 
-    while(1);
+    while(1)
+    {
+
+        // Check for ARM
+        if (FLAG_ARM != FLAG_ARM_PREV)
+        {
+            if (FLAG_ARM)
+            {
+                if (action.arm() == Action::Result::Success) qDebug()<<"Arming Success";
+                else qDebug()<<"Arming Failed";
+            }
+            else
+            {
+                if (action.disarm() == Action::Result::Success) qDebug()<<"Disarming Success";
+                else qDebug()<<"Disrming Failed";
+            }
+
+            FLAG_ARM_PREV = FLAG_ARM;
+        }
+    }
 
     return 0;
 }
@@ -109,4 +132,15 @@ void apilot::CallBack_RC_Channels(const mavlink_message_t msg_raw)
     qDebug() << "Channel 14 : " << rc_channels.chan14_raw;// << "\n";
     qDebug() << "Channel 15 : " << rc_channels.chan15_raw;// << "\n";
     qDebug() << "Channel 16 : " << rc_channels.chan16_raw;// << "\n";
+
+
+    //Channel 6 is for ARM/DISARM
+    if (rc_channels.chan6_raw < 1100) //UP
+    {
+        FLAG_ARM = false;
+    }
+    else if (rc_channels.chan6_raw > 1800) // DOWN
+    {
+        FLAG_ARM = true;
+    }
 }

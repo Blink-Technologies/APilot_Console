@@ -21,12 +21,11 @@ using namespace mavsdk;
 using std::chrono::seconds;
 using std::this_thread::sleep_for;
 
+
 class apilot
 {
 public:
     apilot();
-
-
 
     static void CallBack_Battery(mavsdk::Telemetry::Battery btry);
     static void CallBack_RC_Channels(const mavlink_message_t msg_raw);
@@ -35,6 +34,8 @@ public:
 private:
     void process_rc_channels(const mavlink_message_t &message);
     int InitMav();
+
+
 };
 
 #endif // APILOT_H
