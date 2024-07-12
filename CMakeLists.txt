@@ -21,6 +21,8 @@ add_executable(APilot_Console
   main.cpp
   apilot.h apilot.cpp
   aimode.h aimode.cpp
+  sharedvars.h sharedvars.cpp
+  a_telem.h a_telem.cpp
 
 )
 
