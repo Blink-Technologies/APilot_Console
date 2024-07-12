@@ -18,7 +18,7 @@ void apilot::Start()
     printh("APilot Started");
     printh("..........................");
 
-    QString FileName = QString("/home/rpi/apilot_logs/%1.log").arg(QDateTime::currentDateTime().toString("ddMMyyyy-hhmmss"));
+    QString FileName = QString("%1.log").arg(QDateTime::currentDateTime().toString("ddMMyyyy-hhmmss"));
 
     ff = new QFile(FileName);
 
