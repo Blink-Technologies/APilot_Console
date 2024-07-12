@@ -15,14 +15,14 @@ apilot::apilot(QObject *parent)
 
 void apilot::Start()
 {
-    printh("APilot Started");
-    printh("..........................");
+    qDebug()<<"APilot Started";
+    qDebug()<<"..........................";
 
     QString FileName = QString("/home/rpi/apilot_logs/%1.log").arg(QDateTime::currentDateTime().toString("ddMMyyyy-hhmmss"));
 
     ff = new QFile(FileName);
 
-    if (ff->open(QIODevice::WriteOnly))
+    if (ff->open(QIODevice::Append))
     {
         LogIntoFile("Welcome to APilot");
         LogIntoFile(FileName);
