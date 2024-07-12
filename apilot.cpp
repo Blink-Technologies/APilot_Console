@@ -21,17 +21,9 @@ void apilot::Start()
     QString FileName = QString("/home/rpi/apilot_logs/%1.log").arg(QDateTime::currentDateTime().toString("ddMMyyyy-hhmmss"));
 
     ff = new QFile(FileName);
-
-    if (ff->open(QIODevice::Append))
-    {
-        LogIntoFile("Welcome to APilot");
-        LogIntoFile(FileName);
-        printh("File Created :: " + FileName);
-
-    }
-    else  printh("File Creation Error :: " + FileName);
-
-
+    LogIntoFile("Welcome to APilot");
+    LogIntoFile(FileName);
+    printh("File Created :: " + FileName);
 
     InitMav();
 }
@@ -312,6 +304,18 @@ void apilot::LogIntoFile(QString aa)
 {
     aa = aa + "\n";
 
-    if (ff->isOpen())
-        ff->write(aa.toUtf8());
+    if (!ff->isOpen())
+    {
+        if (ff->open(QIODevice::Append))
+        {
+            ff->write(aa.toUtf8());
+            ff->close();
+        }
+
+    }
+    else
+    {
+        ff->close();
+    }
+
 }
