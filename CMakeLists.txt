@@ -20,6 +20,7 @@ find_package(MAVSDK REQUIRED)
 add_executable(APilot_Console
   main.cpp
   apilot.h apilot.cpp
+  aimode.h aimode.cpp
 
 )
 
